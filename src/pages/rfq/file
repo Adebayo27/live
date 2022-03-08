@@ -1,0 +1,428 @@
+//// -- LEVEL 1
+//// -- Tables and References
+
+// Creating tables
+Table users {
+  id int [pk, increment] // auto-increment
+  email varchar
+  password text
+  resetlink text
+  otp varchar
+  created_at timestamp
+  user_type varchar
+  user_mode varchar
+  unique_id varchar
+  status varchar
+  token text
+  last_login datetime
+}
+Table signatures {
+ id int [pk, increment] 
+user_id int
+image_url text
+created_at timestamp
+updated_at timestamp
+}
+
+
+
+Table settings {
+ id int [pk, increment] 
+key varchar
+value text
+}
+
+
+
+Table rfq_projects {
+ id int [pk, increment] 
+title text
+user_id int
+created_at timestamp 
+updated_at timestamp 
+}
+
+
+Table rfq_requests {
+ id int [pk, increment] 
+title varchar
+rfq_category_id int
+status enum
+budget int
+budget_visibility bool
+delivery_date date
+quote_deadline  date
+delivery_address text
+request_type enum
+withholding_task bool
+tax_percentage float
+rfq_file text
+rfq_delivery_status enum
+rfq_delivery_confirmation enum
+created_at timestamp 
+updated_at timestamp 
+}
+
+Table rfq_category {
+id int [pk, increment] 
+title varchar
+}
+
+
+Table rfq_materials {
+id int [pk, increment] 
+rfq_request_id int
+rfq_name_id int
+rfq_description_id int
+rfq_measurement_id int
+description longText
+measurement int
+quantity int
+}
+
+
+Table rfq_name_options {
+id int [pk, increment] 
+title varchar
+}
+
+
+Table rfq_description_options {
+ id int [pk, increment] 
+title varchar
+}
+
+
+Table rfq_measurement_name_options {
+ id int [pk, increment] 
+title varchar
+}
+
+
+Table rfq_quotes {
+ id int [pk, increment] 
+rfq_request_id int
+company_id int
+total_cost float
+delivery_date date
+status enum
+}
+
+
+Table rfq_quotes_materials {
+ id int [pk, increment] 
+rfq_material_id int
+rfq_request_id int
+rfq_quote_id int
+price_per_unit float
+total_cost int
+discount int
+}
+
+
+Table ratings {
+ id int [pk, increment] 
+company_id int
+user_id int
+rating text
+rating_breakdown text
+}
+
+
+Table reviews {
+ id int [pk, increment] 
+comment text
+company_id int
+user_id int
+}
+
+
+Table contracts {
+ id int [pk, increment] 
+client_id int
+vendor_id int
+verdor_signed bool
+company_signed bool
+status enum
+rfq_request_id int
+rfq_quote_id int
+}
+
+
+Table payment {
+ id int [pk, increment] 
+client_id int
+vendor_id int
+cost int
+task float
+total int
+status enum
+reference varchar
+auth_code varchar
+contract_id int
+}
+
+Table pictures {
+ id int [pk, increment] 
+rfq_request_id int
+picture varchar
+url text
+table_name enum
+owner_id int
+}
+Table feedbacks {
+ id int [pk, increment] 
+reason text
+message text
+rfq_request_id int
+rfq_quote_id int
+status enum
+ 
+}
+
+
+Table  tickets {
+ id int [pk, increment] 
+
+subject text
+message text
+status enum
+user_id int
+
+}
+Table  team {
+ id int [pk, increment] 
+ user_id int
+name text
+email varchar
+role enum
+status enum
+
+}
+Table company_category {
+ id int [pk, increment] 
+title varchar
+
+}
+Table  settlements {
+ id int [pk, increment] 
+contract_id int
+payment_date date 
+payment_amount int
+bank_id int
+
+}
+Table bank {
+ id int [pk, increment] 
+user_id int
+bank_name varchar
+account_name text
+account_number int
+
+}
+Table favourites {
+id int [pk, increment]
+rfq_request_id int
+user_id int
+
+}
+
+Table refunds {
+ id int [pk, increment] 
+date_initiated date
+date_refunded date
+rfc_request_id int
+vendor_id int
+bank_id int
+amount int
+
+
+}
+Table kyc {
+ id int [pk, increment] 
+ vendor_id int
+date_submitted date
+checked_by_id int
+status enum
+business_certificate text
+vat_certficate text
+insurance text
+confirmation_of_address text
+proof_of_identity text
+
+}
+Table kyc_rejection {
+vendor_id int
+checked_by_id int
+date_initiated date
+kyc_id int
+reason text
+message text
+}
+
+
+Table documents{
+name text
+slug text
+user_id int
+url int
+}
+
+
+
+
+Table user_settings {
+user_id int
+key varchar
+value text
+
+}
+
+
+
+Table company {
+id int [pk, increment]
+logo varchar
+name text
+cac_regno varchar
+country_id int
+user_id int
+state_id int
+phone varchar
+address text
+company_category_id int
+about_us longtext
+company_email varchar
+size varchar
+primary_contact_name varchar
+primary_contact_phone varchar
+primary_contact_email varchar
+kyc_status Enum
+ }
+
+Table individual {
+id int [pk, increment]
+first_name varchar
+last_name varchar
+country_id int
+user_id int
+state_id int
+phone varchar
+picture text
+gender text
+logo varchar
+ }
+ 
+Table countries {
+  id int [pk]
+  name varchar
+  continent_name varchar
+ }
+ 
+ Table states {
+  id int [pk]
+  name varchar
+  continent_name varchar
+ }
+
+
+// Creating references
+// You can also define relaionship separately
+// > many-to-one; < one-to-many; - one-to-one
+Ref: rfq_requests.rfq_category_id > rfq_category.id
+Ref: rfq_projects.user_id > users.id
+Ref: user_settings.user_id > users.id
+Ref: rfq_materials.rfq_request_id > rfq_requests.id
+
+Ref: "signatures"."user_id" < "users"."id"
+
+
+Ref: "rfq_materials"."rfq_name_id" < "rfq_name_options"."id"
+
+Ref: "rfq_materials"."rfq_description_id" < "rfq_description_options"."id"
+
+Ref: "rfq_materials"."rfq_measurement_id" < "rfq_measurement_name_options"."id"
+
+Ref: "ratings"."company_id" < "company"."id"
+
+Ref: "contracts"."client_id" < "users"."id"
+
+Ref: "contracts"."vendor_id" < "users"."id"
+
+Ref: "contracts"."rfq_request_id" < "rfq_requests"."id"
+
+Ref: "contracts"."rfq_quote_id" < "rfq_quotes"."id"
+
+Ref: "rfq_quotes"."rfq_request_id" < "rfq_requests"."id"
+
+
+Ref: "rfq_quotes"."company_id" < "company"."id"
+
+Ref: "company"."user_id" < "users"."id"
+
+Ref: "company"."country_id" < "countries"."id"
+
+Ref: "company"."state_id" < "states"."id"
+
+Ref: "reviews"."company_id" < "company"."id"
+
+Ref: "reviews"."user_id" < "users"."id"
+
+Ref: "rfq_quotes_materials"."rfq_material_id" < "rfq_materials"."id"
+
+Ref: "rfq_quotes_materials"."rfq_quote_id" < "rfq_quotes"."id"
+
+Ref: "rfq_quotes_materials"."rfq_request_id" < "rfq_requests"."id"
+
+Ref: "feedbacks"."rfq_request_id" < "rfq_requests"."id"
+
+Ref: "feedbacks"."rfq_quote_id" < "rfq_quotes"."id"
+
+
+
+Ref: "tickets"."user_id" < "users"."id"
+
+
+Ref: "payment"."client_id" < "users"."id"
+
+Ref: "payment"."vendor_id" < "users"."id"
+
+Ref: "payment"."contract_id" < "contracts"."id"
+
+Ref: "favourites"."rfq_request_id" < "rfq_requests"."id"
+
+Ref: "favourites"."user_id" < "users"."id"
+
+Ref: "pictures"."rfq_request_id" < "rfq_requests"."id"
+
+Ref: "pictures"."owner_id" < "users"."id"
+
+Ref: "bank"."user_id" < "users"."id"
+
+Ref: "settlements"."bank_id" < "bank"."id"
+
+Ref: "settlements"."contract_id" < "contracts"."id"
+
+Ref: "documents"."user_id" < "users"."id"
+
+Ref: "kyc_rejection"."vendor_id" < "users"."id"
+
+Ref: "kyc_rejection"."checked_by_id" < "users"."id"
+
+Ref: "kyc_rejection"."kyc_id" < "kyc"."id"
+
+Ref: "company"."company_category_id" < "company_category"."id"
+
+Ref: "team"."user_id" < "users"."id"
+
+Ref: "individual"."user_id" < "users"."id"
+
+Ref: "individual"."state_id" < "states"."id"
+
+Ref: "individual"."country_id" < "countries"."id"
+
+Ref: "refunds"."vendor_id" < "users"."id"
+
+Ref: "refunds"."bank_id" < "bank"."id"
+
+Ref: "refunds"."rfc_request_id" < "rfq_requests"."id"
